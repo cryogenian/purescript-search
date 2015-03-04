@@ -8,6 +8,7 @@ import Text.SlamSearch.Parser
 import Text.SlamSearch.Parser.Terms
 import Text.SlamSearch.Parser.Tokens
 import Text.SlamSearch.Parser.Values
+import Text.SlamSearch.Printer
 
 import Text.Parsing.Parser
 import Text.Parsing.Parser.Combinators
@@ -105,6 +106,16 @@ searchTest = do
                                    (ContainsPredicate
                                     (TextVal "baz"))))
                        EmptyQuery))
+
+
+      print $ prettyQuery expected
+
+      case parseSearchQuery "baz:~\"_foo%bar\" -quux:foo:12..23" of
+        Left msg -> do
+          assert false
+        Right actual -> do
+          print $ prettyQuery actual
+      
       case parseSearchQuery input of
         Left msg -> do
           assert false
