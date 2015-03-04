@@ -9,7 +9,8 @@ import Data.Either
 
 import Text.Parsing.Parser
 import Text.Parsing.Parser.Combinators
-import Text.SlamSearch.Parser.Utils
+import Text.Parsing.Parser.Token
+
 import Text.SlamSearch.Parser.Tokens
 
 data Value =

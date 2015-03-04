@@ -2,10 +2,10 @@ module Text.SlamSearch.Parser.Terms where
 
 import Text.SlamSearch.Parser.Values
 import Text.SlamSearch.Parser.Tokens
-import Text.SlamSearch.Parser.Utils
 
 import Text.Parsing.Parser
 import Text.Parsing.Parser.Combinators
+import Text.Parsing.Parser.Token
 import Control.Apply
 import Control.Alt
 import Control.Alternative

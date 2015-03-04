@@ -1,9 +1,9 @@
 module Text.SlamSearch.Parser.Tokens where
 
 import Text.Parsing.Parser
-import Text.Parsing.Parser.Combinators
+import Text.Parsing.Parser.Combinators 
 import Text.Parsing.Parser.String
-import Text.SlamSearch.Parser.Utils
+
 import Control.Apply
 import Control.Alt
 import Control.Alternative 
