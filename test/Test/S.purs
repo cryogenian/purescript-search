@@ -1,6 +1,7 @@
 module Test.S where
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Exception
 import Test.Mocha
 
 import Text.SlamSearch.Parser
@@ -21,15 +22,9 @@ import Control.Alt
 import Control.Alternative
 
 
-foreign import raise """
-function raise() {
-  throw new Error();
-}
-""" :: forall e. Eff e Unit
-
 assert x = do
   if not x then
-    raise
+    throwException $ error $ "error in assertion"
     else return unit
 
 rawTextTest = do
