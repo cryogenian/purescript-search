@@ -132,28 +132,28 @@ l = do
 
 
 containsP :: Parser [Value] SimplePredicate
-containsP = ContainsP <$> when isVal
+containsP = ContainsP <$> when isTextual
 
 eqP :: Parser [Value] SimplePredicate
-eqP =  get (Through Eq) *> (EqP <$> when isVal) 
+eqP =  get (Through Eq) *> (EqP <$> when isTextual) 
 
 gtP :: Parser [Value] SimplePredicate
-gtP =  get (Through Gt) *> (GtP <$> when isVal) 
+gtP =  get (Through Gt) *> (GtP <$> when isTextual) 
 
 gteP :: Parser [Value] SimplePredicate
-gteP = get (Through GtE) *> (GteP <$> when isVal) 
+gteP = get (Through GtE) *> (GteP <$> when isTextual) 
 
 ltP :: Parser [Value] SimplePredicate
-ltP = get (Through Lt) *> (LtP <$> when isVal) 
+ltP = get (Through Lt) *> (LtP <$> when isTextual) 
 
 lteP :: Parser [Value] SimplePredicate
-lteP = get (Through LtE) *> (LteP <$> when isVal) 
+lteP = get (Through LtE) *> (LteP <$> when isTextual) 
 
 neP :: Parser [Value] SimplePredicate
-neP = get (Through Ne) *> (NeP <$> when isVal) 
+neP = get (Through Ne) *> (NeP <$> when isTextual) 
 
 likeP :: Parser [Value] SimplePredicate
-likeP = get (Through Tilde) *> (LikeP <$> when isVal) 
+likeP = get (Through Tilde) *> (LikeP <$> when isTextual) 
   
 p :: Parser [Value] PredicateAndLabel
 p = P <$> choice [try likeP,

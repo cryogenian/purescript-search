@@ -9,7 +9,6 @@ import Text.SlamSearch.Parser.Terms
 import Text.SlamSearch.Parser.Tokens
 import Text.SlamSearch.Parser.Values
 
-
 import Text.Parsing.Parser
 import Text.Parsing.Parser.Combinators
 import Text.Parsing.Parser.Expr
@@ -121,7 +120,7 @@ valueTest = do
                       Tag "baz",
                       Label "baz",
                       MetaLabel "meta",
-                      Value "quux",
+                      TextVal "quux",
                       Through Ne,
                       RangeVal "foo" "bar"]
       let actual = runParser input vals
@@ -154,14 +153,14 @@ searchTest = do
             ]
 
       let results = [
-            [IncludeTerm (SearchTermSimple [] (GtP(Value("2"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsP(Value("foo"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsP(Value("foo"))))],
-            [ExcludeTerm (SearchTermSimple [] (ContainsP(Value("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (GtP(TextVal("2"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo"))))],
+            [ExcludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo"))))],
             [IncludeTerm (SearchTermSimple [] (ContainsP(Tag("foo"))))],
             [IncludeTerm (SearchTermSimple [] (ContainsP(Glob("*"))))],
             [IncludeTerm (SearchTermSimple [] (ContainsP(Glob("uni*"))))],
-            [IncludeTerm (SearchTermSimple [Common("foo")] (GtP(Value "2")))],
+            [IncludeTerm (SearchTermSimple [Common("foo")] (GtP(TextVal "2")))],
             [IncludeTerm (SearchTermSimple
                           [Common("foo")]
                           (ContainsP(RangeVal "0" "2")))],
@@ -172,11 +171,11 @@ searchTest = do
             
             [IncludeTerm (SearchTermSimple 
                         [Common("foo"), Common("bar")]
-                        (ContainsP(Value("baz"))))],
+                        (ContainsP(TextVal("baz"))))],
             
             [IncludeTerm (SearchTermSimple
                           [Common("baz")]
-                          (LikeP(Value("\"_foo%bar\""))))],
+                          (LikeP(TextVal("\"_foo%bar\""))))],
             
             [IncludeTerm (SearchTermSimple [] (LikeP(Glob("?foo*bar"))))],
             [IncludeTerm (SearchTermSimple
@@ -185,10 +184,10 @@ searchTest = do
             
             [IncludeTerm (SearchTermSimple
                           [Meta("path")]
-                          (ContainsP(Value("/foo/bar"))))],
+                          (ContainsP(TextVal("/foo/bar"))))],
             
-            [IncludeTerm (SearchTermSimple [] (ContainsP(Value("foo")))),
-             IncludeTerm (SearchTermSimple [] (ContainsP(Value("bar")))),
+            [IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo")))),
+             IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("bar")))),
              IncludeTerm (SearchTermSimple 
                          [Common("baz"), Common("quux")]
                          (ContainsP(RangeVal "0" "2")))]

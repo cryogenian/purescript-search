@@ -14,7 +14,7 @@ import Text.Parsing.Parser.Token
 import Text.SlamSearch.Parser.Tokens
 
 data Value =
-  Value String
+  TextVal String
   | RangeVal String String
   | Tag String
   | Label String
@@ -22,9 +22,9 @@ data Value =
   | Glob String
   | Through Token
 
-isValue :: Value -> Boolean
-isValue (Value _) = true
-isValue _ = false
+isTextVal :: Value -> Boolean
+isTextVal (TextVal _) = true
+isTextVal _ = false
 
 isRangeVal :: Value -> Boolean
 isRangeVal (RangeVal _ _) = true 
@@ -46,12 +46,12 @@ isGlob :: Value -> Boolean
 isGlob (Glob _) = true
 isGlob _ = false 
 
-isVal :: Value -> Boolean
-isVal v = isGlob v || isValue v || isRangeVal v || isTag v
+isTextual :: Value -> Boolean
+isTextual v = isGlob v || isTextVal v || isRangeVal v || isTag v
 
 instance valueShow :: Show Value where
   show val = case val of
-    Value str -> "Value(" <> str <> ")"
+    TextVal str -> "TextVal(" <> str <> ")"
     RangeVal str str' -> "Range(" <> str <> ".." <> str' <> ")"
     Tag str -> "Tag(" <> str <> ")"
     Label str -> "Label(" <> str <> ")"
@@ -60,7 +60,7 @@ instance valueShow :: Show Value where
     Through tok -> "Through(" <> show tok <> ")"
 
 instance valueEq :: Eq Value where
-  (==) (Value v) (Value v') = v == v'
+  (==) (TextVal v) (TextVal v') = v == v'
   (==) (RangeVal v v') (RangeVal vv vv') = v == vv && v' == vv'
   (==) (Tag v) (Tag v') = v == v'
   (==) (Label v) (Label v') = v == v'
@@ -136,7 +136,7 @@ glob = do
 simple :: Parser [Token] Value
 simple = try do
   txt <- text
-  return $ Value txt 
+  return $ TextVal txt 
   
   
 through :: Parser [Token] Value
