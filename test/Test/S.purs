@@ -153,44 +153,44 @@ searchTest = do
             ]
 
       let results = [
-            [IncludeTerm (SearchTermSimple [] (GtP(TextVal("2"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo"))))],
-            [ExcludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsP(Tag("foo"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsP(Glob("*"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsP(Glob("uni*"))))],
-            [IncludeTerm (SearchTermSimple [Common("foo")] (GtP(TextVal "2")))],
+            [IncludeTerm (SearchTermSimple [] (GtPredicate(TextVal("2"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo"))))],
+            [ExcludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(Tag("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(Glob("*"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(Glob("uni*"))))],
+            [IncludeTerm (SearchTermSimple [Common("foo")] (GtPredicate(TextVal "2")))],
             [IncludeTerm (SearchTermSimple
                           [Common("foo")]
-                          (ContainsP(RangeVal "0" "2")))],
+                          (ContainsPredicate(RangeVal "0" "2")))],
             
             [ExcludeTerm (SearchTermSimple
                           [Common("foo")]
-                          (ContainsP(RangeVal "0" "2")))],
+                          (ContainsPredicate(RangeVal "0" "2")))],
             
             [IncludeTerm (SearchTermSimple 
                         [Common("foo"), Common("bar")]
-                        (ContainsP(TextVal("baz"))))],
+                        (ContainsPredicate(TextVal("baz"))))],
             
             [IncludeTerm (SearchTermSimple
                           [Common("baz")]
-                          (LikeP(TextVal("\"_foo%bar\""))))],
+                          (LikePredicate(TextVal("\"_foo%bar\""))))],
             
-            [IncludeTerm (SearchTermSimple [] (LikeP(Glob("?foo*bar"))))],
+            [IncludeTerm (SearchTermSimple [] (LikePredicate(Glob("?foo*bar"))))],
             [IncludeTerm (SearchTermSimple
                           [Common("foo")]
-                          (ContainsP(Glob("uni*"))))],
+                          (ContainsPredicate(Glob("uni*"))))],
             
             [IncludeTerm (SearchTermSimple
                           [Meta("path")]
-                          (ContainsP(TextVal("/foo/bar"))))],
+                          (ContainsPredicate(TextVal("/foo/bar"))))],
             
-            [IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("foo")))),
-             IncludeTerm (SearchTermSimple [] (ContainsP(TextVal("bar")))),
+            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo")))),
+             IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("bar")))),
              IncludeTerm (SearchTermSimple 
                          [Common("baz"), Common("quux")]
-                         (ContainsP(RangeVal "0" "2")))]
+                         (ContainsPredicate(RangeVal "0" "2")))]
             ]
       let cases = zip inputs results
       for_ cases $ \(Tuple input expected) ->

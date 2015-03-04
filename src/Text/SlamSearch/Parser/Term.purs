@@ -12,37 +12,37 @@ import Control.Alternative
 import Data.Tuple
 import Data.Either
 
-data SimplePredicate =
-  ContainsP Value
-  | EqP Value
-  | GtP Value
-  | GteP Value
-  | LteP Value
-  | LtP Value
-  | NeP Value
-  | LikeP Value
+data Predicate =
+  ContainsPredicate Value
+  | EqPredicate Value
+  | GtPredicate Value
+  | GtePredicate Value
+  | LtePredicate Value
+  | LtPredicate Value
+  | NePredicate Value
+  | LikePredicate Value
 
-instance showSimplePredicate :: Show SimplePredicate where
+instance showPredicate :: Show Predicate where
   show a = case a of
-    ContainsP p -> "ContainsP(" <> show p <> ")"
-    EqP p -> "EqP(" <> show p <> ")"
-    GtP p -> "GtP(" <> show p <> ")"
-    GteP p -> "GteP(" <> show p <> ")"
-    LteP p -> "GteP(" <> show p <> ")"
-    LtP p -> "LtP(" <> show p <> ")"
-    NeP p -> "NeP(" <> show p <> ")"
-    LikeP p -> "LikeP(" <> show p <> ")"
+    ContainsPredicate p -> "ContainsPredicate(" <> show p <> ")"
+    EqPredicate p -> "EqPredicate(" <> show p <> ")"
+    GtPredicate p -> "GtPredicate(" <> show p <> ")"
+    GtePredicate p -> "GtePredicate(" <> show p <> ")"
+    LtePredicate p -> "GtePredicate(" <> show p <> ")"
+    LtPredicate p -> "LtPredicate(" <> show p <> ")"
+    NePredicate p -> "NePredicate(" <> show p <> ")"
+    LikePredicate p -> "LikePredicate(" <> show p <> ")"
 
 
-instance eqSimplePredicate :: Eq SimplePredicate where
-  (==) (ContainsP p) (ContainsP p') = p == p'
-  (==) (EqP p) (EqP p') = p == p'
-  (==) (GtP p) (GtP p') = p == p'
-  (==) (GteP p) (GteP p') = p == p'
-  (==) (LteP p) (LteP p') = p == p'
-  (==) (LtP p) (LtP p') = p == p'
-  (==) (NeP p) (NeP p') = p == p'
-  (==) (LikeP p) (LikeP p') = p == p'
+instance predicateEq :: Eq Predicate where
+  (==) (ContainsPredicate p) (ContainsPredicate p') = p == p'
+  (==) (EqPredicate p) (EqPredicate p') = p == p'
+  (==) (GtPredicate p) (GtPredicate p') = p == p'
+  (==) (GtePredicate p) (GtePredicate p') = p == p'
+  (==) (LtePredicate p) (LtePredicate p') = p == p'
+  (==) (LtPredicate p) (LtPredicate p') = p == p'
+  (==) (NePredicate p) (NePredicate p') = p == p'
+  (==) (LikePredicate p) (LikePredicate p') = p == p'
   (==) _ _ = false
   (/=) a b = not $ a == b
 
@@ -61,7 +61,7 @@ instance eqLabel :: Eq Label where
   (==) _ _ = false
   (/=) a b = not $ a == b
 
-data SearchTermSimple = SearchTermSimple [Label] SimplePredicate
+data SearchTermSimple = SearchTermSimple [Label] Predicate
 
 instance showSearchTermSimpleEq :: Show SearchTermSimple where
   show (SearchTermSimple ls p) =
@@ -90,7 +90,7 @@ instance showSearchTerm :: Show SearchTerm where
     ExcludeTerm t -> "Exclude(" <> show t <> ")"
 
 data PredicateAndLabel =
-  P SimplePredicate
+  P Predicate
   | L Label
   | I
   | E
@@ -131,44 +131,44 @@ l = do
   (when isMeta >>= \(MetaLabel t) -> return $ L (Meta t))
 
 
-containsP :: Parser [Value] SimplePredicate
-containsP = ContainsP <$> when isTextual
+containsPredicate :: Parser [Value] Predicate
+containsPredicate = ContainsPredicate <$> when isTextual
 
-eqP :: Parser [Value] SimplePredicate
-eqP =  get (Through Eq) *> (EqP <$> when isTextual) 
+eqPredicate :: Parser [Value] Predicate
+eqPredicate =  get (Through Eq) *> (EqPredicate <$> when isTextual) 
 
-gtP :: Parser [Value] SimplePredicate
-gtP =  get (Through Gt) *> (GtP <$> when isTextual) 
+gtPredicate :: Parser [Value] Predicate
+gtPredicate =  get (Through Gt) *> (GtPredicate <$> when isTextual) 
 
-gteP :: Parser [Value] SimplePredicate
-gteP = get (Through GtE) *> (GteP <$> when isTextual) 
+gtePredicate :: Parser [Value] Predicate
+gtePredicate = get (Through GtE) *> (GtePredicate <$> when isTextual) 
 
-ltP :: Parser [Value] SimplePredicate
-ltP = get (Through Lt) *> (LtP <$> when isTextual) 
+ltPredicate :: Parser [Value] Predicate
+ltPredicate = get (Through Lt) *> (LtPredicate <$> when isTextual) 
 
-lteP :: Parser [Value] SimplePredicate
-lteP = get (Through LtE) *> (LteP <$> when isTextual) 
+ltePredicate :: Parser [Value] Predicate
+ltePredicate = get (Through LtE) *> (LtePredicate <$> when isTextual) 
 
-neP :: Parser [Value] SimplePredicate
-neP = get (Through Ne) *> (NeP <$> when isTextual) 
+nePredicate :: Parser [Value] Predicate
+nePredicate = get (Through Ne) *> (NePredicate <$> when isTextual) 
 
-likeP :: Parser [Value] SimplePredicate
-likeP = get (Through Tilde) *> (LikeP <$> when isTextual) 
+likePredicate :: Parser [Value] Predicate
+likePredicate = get (Through Tilde) *> (LikePredicate <$> when isTextual) 
   
 p :: Parser [Value] PredicateAndLabel
-p = P <$> choice [try likeP,
-                  try neP,
-                  try lteP,
-                  try ltP,
-                  try gtP,
-                  try gteP,
-                  try eqP,
-                  containsP]
+p = P <$> choice [try likePredicate,
+                  try nePredicate,
+                  try ltePredicate,
+                  try ltPredicate,
+                  try gtPredicate,
+                  try gtePredicate,
+                  try eqPredicate,
+                  containsPredicate]
 
 predicatesAndLabels :: Parser [Value] [PredicateAndLabel]
 predicatesAndLabels = many $ choice [try p, try l, i, e]
 
-getPredicate :: Parser [PredicateAndLabel] SimplePredicate
+getPredicate :: Parser [PredicateAndLabel] Predicate
 getPredicate = do
   (P p) <- when isP
   return p
