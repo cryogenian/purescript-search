@@ -18,7 +18,7 @@
     "purescript-mocha": "~0.0.3",
     "purescript-strings": "~0.4.3",
     "purescript-foldable-traversable": "~0.3.0",
-    "purescript-parsing": "https://github.com/cryogenian/purescript-parsing.git#master",
-    "purescript-exceptions": "~0.2.2"
+    "purescript-exceptions": "~0.2.2",
+    "purescript-parsing": "~0.3.1"
   }
 }

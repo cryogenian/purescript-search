@@ -19,6 +19,7 @@ import Data.Tuple
 import Control.Apply
 import Control.Alt
 import Control.Alternative
+import Debug.Trace
 
 
 assert x = do
@@ -27,8 +28,8 @@ assert x = do
     else return unit
 
 searchTest = do
-  describe "searchQuery" $ do
-    it "should do something" $ do
+  describe "searchTerm" $ do
+    it "should parse one term" $ do
       let inputs = [
             ">2",
             "foo",
@@ -44,64 +45,73 @@ searchTest = do
             "baz:~\"_foo%bar\"",
             "~?foo*bar",
             "foo:uni*",
-            "@path:/foo/bar",
-            "foo bar baz:quux:0..2"
+            "@path:/foo/bar"
             ]
 
       let results = [
-            [IncludeTerm (SearchTermSimple [] (GtPredicate(TextVal("2"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo"))))],
-            [ExcludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(Tag("foo"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(Glob("*"))))],
-            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(Glob("uni*"))))],
-            [IncludeTerm (SearchTermSimple [Common("foo")] (GtPredicate(TextVal "2")))],
-            [IncludeTerm (SearchTermSimple
-                          [Common("foo")]
-                          (ContainsPredicate(RangeVal "0" "2")))],
+            IncludeTerm (SearchTermSimple [] (GtPredicate(TextVal("2")))),
+            IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo")))),
+            IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo")))),
+            ExcludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo")))),
+            IncludeTerm (SearchTermSimple [] (ContainsPredicate(Tag("foo")))),
+            IncludeTerm (SearchTermSimple [] (ContainsPredicate(Glob("*")))),
+            IncludeTerm (SearchTermSimple [] (ContainsPredicate(Glob("uni*")))),
+            IncludeTerm (SearchTermSimple [Common("foo")] (GtPredicate(TextVal "2"))),
+            IncludeTerm (SearchTermSimple
+                         [Common("foo")]
+                         (ContainsPredicate(RangeVal "0" "2"))),
             
-            [ExcludeTerm (SearchTermSimple
-                          [Common("foo")]
-                          (ContainsPredicate(RangeVal "0" "2")))],
+            ExcludeTerm (SearchTermSimple
+                         [Common("foo")]
+                         (ContainsPredicate(RangeVal "0" "2"))),
             
-            [IncludeTerm (SearchTermSimple 
+            IncludeTerm (SearchTermSimple 
                         [Common("foo"), Common("bar")]
-                        (ContainsPredicate(TextVal("baz"))))],
+                        (ContainsPredicate(TextVal("baz")))),
             
-            [IncludeTerm (SearchTermSimple
+            IncludeTerm (SearchTermSimple
                           [Common("baz")]
-                          (LikePredicate(TextVal("\"_foo%bar\""))))],
+                          (LikePredicate(TextVal("\"_foo%bar\"")))),
             
-            [IncludeTerm (SearchTermSimple [] (LikePredicate(Glob("?foo*bar"))))],
-            [IncludeTerm (SearchTermSimple
-                          [Common("foo")]
-                          (ContainsPredicate(Glob("uni*"))))],
+            IncludeTerm (SearchTermSimple [] (LikePredicate(Glob("?foo*bar")))),
+            IncludeTerm (SearchTermSimple
+                         [Common("foo")]
+                         (ContainsPredicate(Glob("uni*")))),
             
-            [IncludeTerm (SearchTermSimple
+            IncludeTerm (SearchTermSimple
                           [Meta("path")]
-                          (ContainsPredicate(TextVal("/foo/bar"))))],
-            
-            [IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("foo")))),
-             IncludeTerm (SearchTermSimple [] (ContainsPredicate(TextVal("bar")))),
-             IncludeTerm (SearchTermSimple 
-                         [Common("baz"), Common("quux")]
-                         (ContainsPredicate(RangeVal "0" "2")))]
+                          (ContainsPredicate(TextVal("/foo/bar"))))
             ]
       let cases = zip inputs results
       for_ cases $ \(Tuple input expected) ->
-                   case parseSearchQuery input of
+                   case parseSearchTerm input of
                      Left msg -> assert false
                      Right actual -> do
                        assert $ actual == expected
 
+  describe "parseSearchQuery" $ do
+    it "should parse all query at once" $ do
+      let input = "foo bar baz"
+          expected = SearchAnd (IncludeTerm
+                                (SearchTermSimple []
+                                 (ContainsPredicate
+                                  (TextVal "foo"))))
+                     (SearchAnd (IncludeTerm
+                                 (SearchTermSimple []
+                                  (ContainsPredicate
+                                   (TextVal "bar"))))
+                      (SearchAnd (IncludeTerm
+                                  (SearchTermSimple []
+                                   (ContainsPredicate
+                                    (TextVal "baz"))))
+                       EmptyQuery))
+      case parseSearchQuery input of
+        Left msg -> do
+          assert false
+        Right actual -> do 
+          assert $ actual == expected
 
 
 spec = do
---  rawTextTest
---  slashedTest
---  quotedTest
---  tokenTest
---  valueTest
   searchTest
 

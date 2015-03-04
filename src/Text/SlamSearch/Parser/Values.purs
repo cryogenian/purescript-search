@@ -81,19 +81,19 @@ text = do
     _ -> fail "not text"
 
 tag :: Parser [Token] Value
-tag = get Hash *> when isText >>= \(Text txt) -> return $ Tag txt
+tag = match Hash *> when isText >>= \(Text txt) -> return $ Tag txt
 
 label :: Parser [Token] Value
 label = do
   txt <- try do
     txt <- text
-    get Colon
+    match Colon
     return txt
   return $ Label txt
 
 meta :: Parser [Token] Value
 meta = do
-  get At
+  match At
   l <- label
   case l of
     Label t -> return $ MetaLabel t
@@ -102,14 +102,14 @@ meta = do
 rangeVal :: Parser [Token] Value
 rangeVal = do
   bottom <- text
-  get Range
+  match Range
   up <- text
 
   return $ RangeVal bottom up
 
 globSymb :: Parser [Token] String
-globSymb = (get Star *> return "*")
-           <|> (get QMark *> return "?")
+globSymb = (match Star *> return "*")
+           <|> (match QMark *> return "?")
 
 globTextP :: Parser [Token] String
 globTextP = try do
@@ -139,11 +139,11 @@ glob = do
 simple :: Parser [Token] Value
 simple = try do
   txt <- text
-  return $ TextVal txt 
+  return $ TextVal txt
   
   
 through :: Parser [Token] Value
-through = Through <$> takeTok
+through = Through <$> token
 
 vals :: Parser [Token] [Value]
 vals = many $ do

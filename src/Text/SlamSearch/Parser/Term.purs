@@ -80,6 +80,8 @@ data SearchTerm =
   IncludeTerm SearchTermSimple
   | ExcludeTerm SearchTermSimple
 
+
+
 instance searchTermEq :: Eq SearchTerm where
   (==) (IncludeTerm t) (IncludeTerm t') = t == t'
   (==) (ExcludeTerm t) (ExcludeTerm t') = t == t'
@@ -94,15 +96,23 @@ instance showSearchTerm :: Show SearchTerm where
 data PredicateAndLabel =
   P Predicate
   | L Label
-  | I
-  | E
+  | Include
+  | Exclude
+
+instance predicateAndLabelEq :: Eq PredicateAndLabel where
+  (==) (P p) (P p') = p == p'
+  (==) (L l) (L l') = l == l'
+  (==) Include Include = true
+  (==) Exclude Exclude = true
+  (==) _ _ = false
+  (/=) a b = not $ a == b
 
 instance showPredicateAndLabel :: Show PredicateAndLabel where
   show pl = case pl of
     P sp -> "P(" <> show sp <> ")"
     L l -> "L(" <> show l <> ")"
-    I -> "I"
-    E -> "E"
+    Include -> "Include"
+    Exclude -> "Exclude"
 
 
 isP :: PredicateAndLabel -> Boolean
@@ -113,19 +123,12 @@ isL :: PredicateAndLabel -> Boolean
 isL (L _) = true
 isL _ = false
 
-isI :: PredicateAndLabel -> Boolean
-isI I = true
-isI _ = false
+include :: Parser [Value] PredicateAndLabel
+include = match (Through Plus) *> pure Include
 
-isE :: PredicateAndLabel -> Boolean
-isE E = true
-isE _ = false 
+exclude :: Parser [Value] PredicateAndLabel
+exclude = match (Through Minus) *> pure Exclude
 
-i :: Parser [Value] PredicateAndLabel
-i = get (Through Plus) *> pure I
-
-e :: Parser [Value] PredicateAndLabel
-e = get (Through Minus) *> pure E
 
 l :: Parser [Value] PredicateAndLabel
 l = do
@@ -137,25 +140,25 @@ containsPredicate :: Parser [Value] Predicate
 containsPredicate = ContainsPredicate <$> when isTextual
 
 eqPredicate :: Parser [Value] Predicate
-eqPredicate =  get (Through Eq) *> (EqPredicate <$> when isTextual) 
+eqPredicate =  match (Through Eq) *> (EqPredicate <$> when isTextual) 
 
 gtPredicate :: Parser [Value] Predicate
-gtPredicate =  get (Through Gt) *> (GtPredicate <$> when isTextual) 
+gtPredicate =  match (Through Gt) *> (GtPredicate <$> when isTextual) 
 
 gtePredicate :: Parser [Value] Predicate
-gtePredicate = get (Through GtE) *> (GtePredicate <$> when isTextual) 
+gtePredicate = match (Through GtE) *> (GtePredicate <$> when isTextual) 
 
 ltPredicate :: Parser [Value] Predicate
-ltPredicate = get (Through Lt) *> (LtPredicate <$> when isTextual) 
+ltPredicate = match (Through Lt) *> (LtPredicate <$> when isTextual) 
 
 ltePredicate :: Parser [Value] Predicate
-ltePredicate = get (Through LtE) *> (LtePredicate <$> when isTextual) 
+ltePredicate = match (Through LtE) *> (LtePredicate <$> when isTextual) 
 
 nePredicate :: Parser [Value] Predicate
-nePredicate = get (Through Ne) *> (NePredicate <$> when isTextual) 
+nePredicate = match (Through Ne) *> (NePredicate <$> when isTextual) 
 
 likePredicate :: Parser [Value] Predicate
-likePredicate = get (Through Tilde) *> (LikePredicate <$> when isTextual) 
+likePredicate = match (Through Tilde) *> (LikePredicate <$> when isTextual) 
   
 p :: Parser [Value] PredicateAndLabel
 p = P <$> choice [try likePredicate,
@@ -168,7 +171,7 @@ p = P <$> choice [try likePredicate,
                   containsPredicate]
 
 predicatesAndLabels :: Parser [Value] [PredicateAndLabel]
-predicatesAndLabels = many $ choice [try p, try l, i, e]
+predicatesAndLabels = many $ choice [try p, try l, include, exclude]
 
 getPredicate :: Parser [PredicateAndLabel] Predicate
 getPredicate = do
@@ -183,21 +186,21 @@ simpleTerm = do
 
 searchTermI :: Parser [PredicateAndLabel] SearchTerm
 searchTermI = do
-  i <- option I (when isI)
+  i <- option Include (match Include)
   term <- simpleTerm
   return $ IncludeTerm term
 
 searchTermE :: Parser [PredicateAndLabel] SearchTerm
 searchTermE = do
-  e <- when isE
+  e <- match Exclude
   term <- simpleTerm
   return $ ExcludeTerm term
 
-searchQuery :: Parser [PredicateAndLabel] [SearchTerm]
-searchQuery = many $ choice [searchTermE, searchTermI]
+searchTerm :: Parser [PredicateAndLabel] SearchTerm
+searchTerm = choice [searchTermE, searchTermI]
 
-search :: [Value] -> Either ParseError [SearchTerm]
+search :: [Value] -> Either ParseError SearchTerm
 search tokens =
   let parse = flip runParser in
-  runParser tokens predicatesAndLabels >>= parse searchQuery
+  runParser tokens predicatesAndLabels >>= parse searchTerm
 
