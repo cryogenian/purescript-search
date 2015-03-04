@@ -1,4 +1,8 @@
-module Text.SlamSearch.Parser.Tokens where
+module Text.SlamSearch.Parser.Tokens (
+  tokens,
+  Token(..),
+  isText
+  ) where
 
 import Text.Parsing.Parser
 import Text.Parsing.Parser.Combinators 
@@ -43,9 +47,9 @@ keyChars = [
 rawString :: Parser String String
 rawString = do
   cs <- many $ noneOf keyChars
-  if length cs == 0 then
-    fail "incorrect raw string"
-    else return (fold cs)
+  case cs of
+    [] -> fail "incorrect raw string"
+    cs -> return (fold cs)
     
 
 slashed :: Parser String String
@@ -62,15 +66,12 @@ quotedString :: Parser String String
 quotedString = do
   between (string "\"") (string "\"") $ do
     cs <- many quotedSymbol
-    if length cs == 0 then
-      fail "incorrect quoted string"
-      else return $ "\"" <> (fold cs) <> "\""
-
-
-
+    case cs of
+      [] -> fail "incorrect quoted string"
+      cs -> return $ "\"" <> (fold cs) <> "\""
 
 data Token =
-Text String
+  Text String
   | Star
   | Range
   | QMark

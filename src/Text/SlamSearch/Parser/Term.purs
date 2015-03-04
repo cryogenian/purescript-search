@@ -1,4 +1,6 @@
-module Text.SlamSearch.Parser.Terms where
+module Text.SlamSearch.Parser.Terms (
+  search, SearchTerm(..), SearchTermSimple(..), Predicate(..), Label(..)
+  ) where
 
 import Text.SlamSearch.Parser.Values
 import Text.SlamSearch.Parser.Tokens

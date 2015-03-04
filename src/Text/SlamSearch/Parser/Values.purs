@@ -1,4 +1,7 @@
-module Text.SlamSearch.Parser.Values where
+module Text.SlamSearch.Parser.Values (
+  values, Value(..),
+  isTextual, isLabel, isMeta
+  ) where
 
 import Control.Apply
 import Control.Alt
