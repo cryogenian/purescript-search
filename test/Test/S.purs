@@ -108,7 +108,8 @@ searchTest = do
       case parseSearchQuery input of
         Left msg -> do
           assert false
-        Right actual -> do 
+        Right actual -> do
+          print "!!!"
           assert $ actual == expected
 
 
