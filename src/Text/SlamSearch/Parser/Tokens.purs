@@ -1,7 +1,8 @@
 module Text.SlamSearch.Parser.Tokens (
   tokens,
   Token(..),
-  isText
+  isText,
+  keyChars
   ) where
 
 import Text.Parsing.Parser
@@ -41,7 +42,8 @@ keyChars = [
   "\r",
   "\n",
   "\"",
-  ":"
+  ":",
+  ""
   ]
 
 rawString :: Parser String String

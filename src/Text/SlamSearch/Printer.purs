@@ -1,5 +1,7 @@
 module Text.SlamSearch.Printer (prettyQuery) where
 
+import Data.Array (reverse)
+
 import Text.SlamSearch.Parser
 import Text.SlamSearch.Parser.Terms
 import Text.SlamSearch.Parser.Values
@@ -21,7 +23,7 @@ prettySimpleTerm (SearchTermSimple ls p) = prettyLabels ls <> prettyPredicate p
 
 prettyLabels :: [Label] -> String
 prettyLabels ls =
-  prettyLabels' ls ""
+  prettyLabels' (reverse ls) ""
   where prettyLabels' ls acc =
           case ls of
             [] -> acc

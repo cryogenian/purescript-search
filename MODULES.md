@@ -42,6 +42,18 @@ parseSearchTerm :: String -> Either ParseError SearchTerm
 
 
 
+## Module Text.SlamSearch.Printer
+
+
+
+#### `prettyQuery`
+
+``` purescript
+prettyQuery :: SearchQuery -> String
+```
+
+
+
 ## Module Text.SlamSearch.Parser.Terms
 
 
