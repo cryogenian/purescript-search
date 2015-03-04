@@ -154,42 +154,42 @@ searchTest = do
             ]
 
       let results = [
-            [IncludeTerm (SimplePredicate (GtP(Value("2"))))],
-            [IncludeTerm (SimplePredicate (ContainsP(Value("foo"))))],
-            [IncludeTerm (SimplePredicate (ContainsP(Value("foo"))))],
-            [ExcludeTerm (SimplePredicate (ContainsP(Value("foo"))))],
-            [IncludeTerm (SimplePredicate (ContainsP(Tag("foo"))))],
-            [IncludeTerm (SimplePredicate (ContainsP(Glob("*"))))],
-            [IncludeTerm (SimplePredicate (ContainsP(Glob("uni*"))))],
-            [IncludeTerm (InfieldPredicate [Common("foo")] (GtP(Value "2")))],
-            [IncludeTerm (InfieldPredicate
+            [IncludeTerm (SearchTermSimple [] (GtP(Value("2"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsP(Value("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsP(Value("foo"))))],
+            [ExcludeTerm (SearchTermSimple [] (ContainsP(Value("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsP(Tag("foo"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsP(Glob("*"))))],
+            [IncludeTerm (SearchTermSimple [] (ContainsP(Glob("uni*"))))],
+            [IncludeTerm (SearchTermSimple [Common("foo")] (GtP(Value "2")))],
+            [IncludeTerm (SearchTermSimple
                           [Common("foo")]
                           (ContainsP(RangeVal "0" "2")))],
             
-            [ExcludeTerm (InfieldPredicate
+            [ExcludeTerm (SearchTermSimple
                           [Common("foo")]
                           (ContainsP(RangeVal "0" "2")))],
             
-            [IncludeTerm (InfieldPredicate 
+            [IncludeTerm (SearchTermSimple 
                         [Common("foo"), Common("bar")]
                         (ContainsP(Value("baz"))))],
             
-            [IncludeTerm (InfieldPredicate
+            [IncludeTerm (SearchTermSimple
                           [Common("baz")]
                           (LikeP(Value("\"_foo%bar\""))))],
             
-            [IncludeTerm (SimplePredicate (LikeP(Glob("?foo*bar"))))],
-            [IncludeTerm (InfieldPredicate
+            [IncludeTerm (SearchTermSimple [] (LikeP(Glob("?foo*bar"))))],
+            [IncludeTerm (SearchTermSimple
                           [Common("foo")]
                           (ContainsP(Glob("uni*"))))],
             
-            [IncludeTerm (InfieldPredicate
+            [IncludeTerm (SearchTermSimple
                           [Meta("path")]
                           (ContainsP(Value("/foo/bar"))))],
             
-            [IncludeTerm (SimplePredicate (ContainsP(Value("foo")))),
-             IncludeTerm (SimplePredicate (ContainsP(Value("bar")))),
-             IncludeTerm (InfieldPredicate 
+            [IncludeTerm (SearchTermSimple [] (ContainsP(Value("foo")))),
+             IncludeTerm (SearchTermSimple [] (ContainsP(Value("bar")))),
+             IncludeTerm (SearchTermSimple 
                          [Common("baz"), Common("quux")]
                          (ContainsP(RangeVal "0" "2")))]
             ]

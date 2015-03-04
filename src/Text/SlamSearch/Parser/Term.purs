@@ -61,18 +61,15 @@ instance eqLabel :: Eq Label where
   (==) _ _ = false
   (/=) a b = not $ a == b
 
-data SearchTermSimple =
-  SimplePredicate SimplePredicate
-  | InfieldPredicate [Label] SimplePredicate
+data SearchTermSimple = SearchTermSimple [Label] SimplePredicate
 
 instance showSearchTermSimpleEq :: Show SearchTermSimple where
-  show a = case a of
-    SimplePredicate p -> "SimplePredicate(" <> show p <> ")"
-    InfieldPredicate ls p -> "InfieldPredicate(" <> show ls <> "," <> show p <> ")"
+  show (SearchTermSimple ls p) =
+    "SearchTermSimple(" <> show ls <> "," <> show p <> ")"
+
 
 instance eqSearchTermSimple :: Eq SearchTermSimple where
-  (==) (SimplePredicate p) (SimplePredicate p') = p == p'
-  (==) (InfieldPredicate ls p) (InfieldPredicate ls' p') =
+  (==) (SearchTermSimple ls p) (SearchTermSimple ls' p') =
     p == p' && ls == ls'
   (==) _ _ = false
   (/=) a b = not $ a == b
@@ -171,14 +168,16 @@ p = P <$> choice [try likeP,
 predicatesAndLabels :: Parser [Value] [PredicateAndLabel]
 predicatesAndLabels = many $ choice [try p, try l, i, e]
 
+getPredicate :: Parser [PredicateAndLabel] SimplePredicate
+getPredicate = do
+  (P p) <- when isP
+  return p
+
 simpleTerm :: Parser [PredicateAndLabel] SearchTermSimple
 simpleTerm = do
   ls <- try $ many (when isL >>= \(L l) -> return l)
-  p <- when isP
-  case Tuple ls p of
-    Tuple [] (P p) -> return $ SimplePredicate p
-    Tuple xs (P p) -> return $ InfieldPredicate xs p
-    Tuple _ _ -> fail "impossible happens in simpleTerm"
+  p <- getPredicate
+  return $ SearchTermSimple ls p
 
 searchTermI :: Parser [PredicateAndLabel] SearchTerm
 searchTermI = do
