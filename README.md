@@ -21,7 +21,7 @@ bower install purescript-search
 
 ## Examples
 
-## Simple Searches
+### Simple Searches
 
 1. Search for everything containing the text "foo":
 
@@ -51,7 +51,7 @@ bower install purescript-search
    uni*
     ```
 
-## Predicate Searches
+### Predicate Searches
 
 1. Search for everything containing a `foo` field whose value is greater than `2`:
 
